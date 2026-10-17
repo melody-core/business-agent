@@ -1,0 +1,77 @@
+{
+  "project": {
+    "name": "",
+    "domain": "",
+    "language": "",
+    "timezone": "",
+    "productTitle": "",
+    "repository": {
+      "name": "",
+      "url": "",
+      "role": "agent-kernel"
+    },
+    "targetRepositories": []
+  },
+  "targetRepos": {
+    "localDir": "target-repos",
+    "cloneDepth": 1,
+    "mustBeIndependentClone": true,
+    "agentMustReadBeforeIteration": [
+      "docs/domain-overview.md",
+      "docs/change-map.md"
+    ]
+  },
+  "records": {
+    "iterationsDir": "iterations",
+    "activeIterationFileName": ".active.md",
+    "statusValues": ["working", "blocked", "completed", "abandoned"]
+  },
+  "stages": {
+    "check": { "requiresUserConfirmation": false, "required": true, "output": "health-check.md" },
+    "checkout": { "requiresUserConfirmation": false, "required": "when-target-repository-changes", "output": "pre-iteration.md" },
+    "proDesign": { "requiresUserConfirmation": true, "required": true, "output": "product-design.md" },
+    "uxDesign": { "requiresUserConfirmation": true, "required": "when-user-visible-path-changes", "output": "ux-design.md" },
+    "technicalDesign": { "requiresUserConfirmation": true, "required": "when-behavior-changes", "output": "technical-design.md" },
+    "useCaseDesign": { "requiresUserConfirmation": true, "required": true, "output": "use-case-design.md" },
+    "implementation": { "requiresUserConfirmation": true, "required": "when-code-changes", "output": "implementation-plan.md" },
+    "dev": { "requiresUserConfirmation": false, "requireFeatureBranch": true, "oneRepositoryAtATime": true },
+    "test": { "requiresUserConfirmation": false, "required": true, "output": "test-report.md" },
+    "acceptance": { "requiresUserConfirmation": true, "required": true },
+    "publish": { "requiresUserConfirmation": true, "required": "when-user-requests-publish", "output": "publish-report.md" }
+  },
+  "branchPolicy": {
+    "featureBranchPrefix": "feat/",
+    "mustFetchBaseBeforeFeatureBranch": true,
+    "rejectDirtyWorktree": true,
+    "rejectExistingFeatureBranch": true
+  },
+  "protectedBranches": [],
+  "publish": {
+    "defaultMode": "handoff",
+    "environments": []
+  },
+  "agent": {
+    "host": { "bind": "0.0.0.0", "port": 3780, "heartbeatMs": 60000, "staleLockMs": 300000 },
+    "roles": {
+      "newIteration": ["requester", "operator", "admin"],
+      "confirmDesign": ["requester", "operator", "admin"],
+      "accept": ["requester", "operator", "admin"],
+      "complete": ["operator", "admin"],
+      "publish": ["operator", "admin"],
+      "abandon": ["requester", "operator", "admin"],
+      "setActive": ["admin"]
+    },
+    "requirements": { "alignment": { "enabled": true, "maxInputChars": 350000, "maxRules": 100 } },
+    "autoStartQueued": false,
+    "runtime": {
+      "automaticCoding": false,
+      "maxRepairRounds": 2,
+      "endpointEnv": "AGENT_MODEL_ENDPOINT",
+      "apiKeyEnv": "AGENT_MODEL_API_KEY",
+      "dialogueModelEnv": "AGENT_DIALOGUE_MODEL",
+      "codingModelEnv": "AGENT_CODING_MODEL"
+    },
+    "preview": { "mode": "artifact", "origin": "", "port": 3782 },
+    "evidence": { "enabled": false }
+  }
+}

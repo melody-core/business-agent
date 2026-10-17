@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/business-agent/confirmation.schema.json",
+  "title": "Confirmation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "iterationId", "stage", "artifactVersion", "decision", "actorRole", "createdAt"],
+  "properties": {
+    "id": { "type": "string" },
+    "iterationId": { "type": "string" },
+    "stage": {
+      "enum": ["proDesign", "uxDesign", "technicalDesign", "useCaseDesign", "implementation", "acceptance", "publish"]
+    },
+    "artifactVersion": { "type": "string", "minLength": 7 },
+    "decision": { "enum": ["approve", "reject", "comment"] },
+    "actorRole": { "enum": ["requester", "operator", "admin"] },
+    "actorId": { "type": "string" },
+    "comment": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

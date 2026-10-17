@@ -1,0 +1,91 @@
+{
+  "project": {
+    "name": "bookstore-agent",
+    "domain": "独立书店的目录、收银与会员",
+    "language": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "productTitle": "书店 Agent",
+    "repository": {
+      "name": "bookstore-agent",
+      "url": "git@example.invalid:bookstore/agent.git",
+      "role": "agent-kernel"
+    },
+    "targetRepositories": [
+      {
+        "key": "catalog",
+        "name": "bookstore-catalog",
+        "url": "git@example.invalid:bookstore/catalog.git",
+        "role": "读者看到的书目网站",
+        "baseBranch": "main",
+        "description": "书目浏览、搜索和书籍详情。",
+        "runtime": { "kind": "node", "version": "按该仓声明填写" },
+        "verification": {
+          "build": { "argv": ["npm", "run", "build"], "timeoutMs": 300000, "outputDir": "dist" },
+          "tests": {
+            "required": true,
+            "command": { "argv": ["npm", "test"], "timeoutMs": 180000 },
+            "scope": "repository"
+          }
+        },
+        "dev": { "command": { "argv": ["npm", "run", "dev"], "timeoutMs": 300000 }, "port": 4173 },
+        "writePrefixes": ["src/", "test/"]
+      },
+      {
+        "key": "checkout",
+        "name": "bookstore-checkout",
+        "url": "git@example.invalid:bookstore/checkout.git",
+        "role": "店员使用的收银服务",
+        "baseBranch": "master",
+        "description": "结账、库存扣减和收据。",
+        "runtime": { "kind": "按该仓声明填写", "version": "按该仓声明填写" },
+        "verification": {
+          "build": { "argv": ["make", "build"], "timeoutMs": 300000 },
+          "tests": {
+            "required": true,
+            "command": { "argv": ["make", "test"], "timeoutMs": 180000 },
+            "scope": "changed-packages"
+          }
+        },
+        "dev": { "command": { "argv": ["make", "run"], "timeoutMs": 300000 }, "port": 8080 },
+        "writePrefixes": ["internal/", "internal/test/"]
+      }
+    ]
+  },
+  "targetRepos": {
+    "localDir": "target-repos",
+    "cloneDepth": 1,
+    "mustBeIndependentClone": true,
+    "agentMustReadBeforeIteration": [
+      "docs/domain-overview.md",
+      "docs/change-map.md",
+      "docs/repositories/catalog.md",
+      "docs/repositories/checkout.md"
+    ]
+  },
+  "branchPolicy": {
+    "featureBranchPrefix": "feat/",
+    "mustFetchBaseBeforeFeatureBranch": true,
+    "rejectDirtyWorktree": true,
+    "rejectExistingFeatureBranch": true
+  },
+  "protectedBranches": ["main", "master", "staging", "production"],
+  "publish": {
+    "defaultMode": "handoff",
+    "environments": [
+      { "name": "staging", "targetBranch": "staging", "mode": "push-after-confirm", "url": "" },
+      { "name": "production", "targetBranch": "production", "mode": "handoff", "url": "" }
+    ]
+  },
+  "agent": {
+    "roles": {
+      "confirmDesign": ["requester", "operator", "admin"],
+      "accept": ["requester", "operator", "admin"],
+      "publish": ["operator", "admin"]
+    },
+    "requirements": { "alignment": { "enabled": true } },
+    "autoStartQueued": false,
+    "runtime": { "automaticCoding": false, "maxRepairRounds": 2 },
+    "preview": { "mode": "artifact", "origin": "", "port": 3782 },
+    "evidence": { "enabled": false }
+  }
+}

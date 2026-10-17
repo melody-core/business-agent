@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/business-agent/repository.schema.json",
+  "title": "TargetRepository",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["key", "name", "url", "role", "baseBranch", "description", "runtime", "verification", "dev"],
+  "properties": {
+    "key": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "name": { "type": "string" },
+    "url": { "type": "string", "minLength": 1 },
+    "role": { "type": "string", "description": "提出人能看懂的入口名" },
+    "baseBranch": { "type": "string" },
+    "description": { "type": "string" },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "version"],
+      "properties": {
+        "kind": { "type": "string" },
+        "version": { "type": "string" }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["build", "tests"],
+      "properties": {
+        "build": { "$ref": "#/$defs/command" },
+        "tests": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["required"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "command": { "$ref": "#/$defs/command" },
+            "scope": { "enum": ["changed-packages", "changed-files", "repository", "none"] }
+          }
+        }
+      }
+    },
+    "dev": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["command"],
+      "properties": {
+        "command": { "$ref": "#/$defs/command" },
+        "port": { "type": "integer" }
+      }
+    },
+    "writePrefixes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "自动写入允许的路径前缀。空数组表示必须在实施方案里逐项列出"
+    }
+  },
+  "$defs": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["argv", "timeoutMs"],
+      "properties": {
+        "argv": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "timeoutMs": { "type": "integer", "minimum": 1000 },
+        "env": { "type": "object", "additionalProperties": { "type": "string" } },
+        "outputDir": { "type": "string" }
+      }
+    }
+  }
+}

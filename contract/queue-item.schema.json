@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/business-agent/queue-item.schema.json",
+  "title": "QueueItem",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "title", "requester", "channel", "requirementVersion", "snapshotHash", "createdAt", "state"],
+  "properties": {
+    "id": { "type": "string" },
+    "title": { "type": "string" },
+    "requester": { "type": "string" },
+    "channel": { "enum": ["web", "ide", "api", "adapter"] },
+    "requirementVersion": { "type": "string" },
+    "snapshotHash": { "type": "string" },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "state": { "enum": ["queued", "starting", "withdrawn"] },
+    "blockedReason": { "type": "string" }
+  }
+}

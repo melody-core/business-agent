@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/business-agent/lock.schema.json",
+  "title": "WorkspaceLock",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["iterationId", "holder", "since", "pid", "heartbeatAt"],
+  "properties": {
+    "iterationId": { "type": "string" },
+    "holder": { "type": "string", "pattern": "^(host|human:.+)$" },
+    "since": { "type": "string", "format": "date-time" },
+    "pid": { "type": "integer" },
+    "heartbeatAt": { "type": "string", "format": "date-time" }
+  }
+}

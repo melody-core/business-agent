@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/business-agent/alignment-report.schema.json",
+  "title": "AlignmentReport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["iterationId", "stage", "status", "fingerprint", "createdAt"],
+  "properties": {
+    "iterationId": { "type": "string" },
+    "stage": { "type": "string" },
+    "status": { "enum": ["passed", "blocked", "failed", "missing", "stale"] },
+    "fingerprint": { "type": "string" },
+    "conflicts": { "type": "array", "items": { "type": "string" } },
+    "missing": { "type": "array", "items": { "type": "string" } },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}
