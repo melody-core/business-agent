@@ -16,6 +16,64 @@
 - 真正改仓库、切分支、提交、发布的只有 Kernel 命令。
 - 浏览器是遥控器。任务状态在工作台文件里，关闭页面后仍可恢复。
 
+## 流程
+
+问候和咨询停在对话里，不建任务。确认的是当前版本需求卡；上游一变，下游确认作废，从产品方案重走。开发只使用最新确认的快照。
+
+```mermaid
+flowchart TD
+  talk["提出人与 AI 对话"] --> intent{"目标与验收已明确?"}
+  intent -->|"继续澄清"| talk
+  intent -->|"可执行"| card{"确认当前版本需求卡?"}
+  card -->|"继续调整"| talk
+  card -->|"确认"| queue["写入队列"]
+  queue --> lane{"通道是否空闲?"}
+  lane -->|"有进行中的任务"| waiting["排队并说明占用与下一步"]
+  waiting --> lane
+  lane -->|"空闲，开始"| checkStep["check 环境与已登记仓库"]
+  checkStep --> checkOk{"check 通过?"}
+  checkOk -->|"可自动修复"| initStep["init"]
+  initStep --> checkStep
+  checkOk -->|"权限或凭证等外部条件"| blocked["记为阻塞，等待处理方"]
+  checkOk -->|"通过"| impact{"要改已登记仓库?"}
+  impact -->|"只改工作台或仅调研"| pro["产品方案"]
+  impact -->|"是"| checkout["从该仓最新主干创建功能分支"]
+  checkout --> branchOk{"分支已建且工作区干净?"}
+  branchOk -->|"否"| checkout
+  branchOk -->|"是"| pro
+  pro --> proOk{"产品方案确认?"}
+  proOk -->|"调整"| pro
+  proOk -->|"确认"| ui{"涉及用户可见路径?"}
+  ui -->|"是"| ux["界面方案"]
+  ux --> uxOk{"界面方案确认?"}
+  uxOk -->|"调整"| ux
+  uxOk -->|"确认"| tech["技术方案"]
+  ui -->|"跳过并写明原因"| tech
+  tech --> techOk{"技术方案确认?"}
+  techOk -->|"调整"| tech
+  techOk -->|"确认"| cases["测试与验收用例"]
+  cases --> casesOk{"用例确认?"}
+  casesOk -->|"调整"| cases
+  casesOk -->|"确认"| plan["文件级实施方案"]
+  plan --> planOk{"范围已确认且执行器就绪?"}
+  planOk -->|"未就绪"| waitDev["等待研发接管"]
+  planOk -->|"调整"| plan
+  planOk -->|"确认"| dev["在功能分支上修改允许的文件"]
+  dev --> verify["按绑定中的命令验证"]
+  verify --> verifyOk{"验证通过?"}
+  verifyOk -->|"失败且仍有修复轮次"| dev
+  verifyOk -->|"通过"| accept{"业务验收通过?"}
+  accept -->|"调整需求，旧授权失效"| talk
+  accept -->|"通过"| commit["保存本地交付提交"]
+  commit --> publishAsk{"提出人要求发布?"}
+  publishAsk -->|"否"| done["收口并释放通道"]
+  publishAsk -->|"是"| handoff["生成发布交接"]
+  handoff --> pushOk{"发布确认允许推送?"}
+  pushOk -->|"否，仅交接"| done
+  pushOk -->|"是"| pushed["按绑定推送已声明的目标分支"]
+  pushed --> done
+```
+
 ## 读本仓库的顺序
 
 给实施 AI 的规则在 [`AGENTS.md`](AGENTS.md)。设计正文按下面顺序读：
